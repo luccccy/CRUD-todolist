@@ -38,7 +38,22 @@ const writeCounter = (count, callback) => {
 
 // Public API - Fix this function //////////////////////////////////////////////
 
-exports.getNextUniqueId = () => {
+exports.getNextUniqueId = (callback) => {
+  readCounter((err, counter) => {
+    //if there is non file exist, return err, pass 0 to callback function;
+    if (err) {
+      console.log('err', err);
+    } else {
+      // else , we write counter to the file , counter should be increased by 1;pass the id to the callback function.
+      writeCounter(counter + 1, (err) => {
+        if (err) {
+          console.log('err', err);
+        } else {
+          callback(null, zeroPaddedNumber(counter + 1));
+        }
+      });
+    }
+  });
   counter = counter + 1;
   return zeroPaddedNumber(counter);
 };
