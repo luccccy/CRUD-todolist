@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('underscore');
 const counter = require('./counter');
-
+const Promise = require('bluebird');
 var items = {};
 
 // Public API - Fix these CRUD functions ///////////////////////////////////////
@@ -33,10 +33,24 @@ exports.readAll = (callback) => {
     if (err) {
       console.log(err);
     } else {
-      files.forEach(file => {
-        todos.push({id: file.slice(0, 5), text: file.slice(0, 5)});
+
+      //first, for each file, we need generate a new promise to get the file content
+      //primise.all().then(push each result into the todos);
+      var results = files.map(file => {
+        return new Promise((resolve, reject) => {
+          fs.readFile(fileFolder + '/' + file, (err, data) => {
+            if (err) {
+              reject(err);
+              return;
+            } else {
+              resolve({id: file.slice(0, 5), text: data.toString()});
+            }
+          });
+        });
       });
-      callback(null, todos);
+      Promise.all(results).then((values) => {
+        callback(null, values);
+      });
     }
   });
 };
