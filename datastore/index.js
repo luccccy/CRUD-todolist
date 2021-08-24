@@ -69,25 +69,57 @@ exports.readOne = (id, callback) => {
 };
 
 exports.update = (id, text, callback) => {
-  var item = items[id];
-  if (!item) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    items[id] = text;
-    callback(null, { id, text });
-  }
+  var fileFolder = './test/testData';
+  fs.readdir(fileFolder, function(err, files) {
+    if (err) {
+      console.log(err);
+    } else {
+      var found = false;
+      files.forEach(file => {
+        if (id === file.slice(0, 5)) {
+          found = true;
+          fs.writeFile(fileFolder + '/' + file, text, (err) => {
+            if (err) {
+              console.log(err);
+            } else {
+              callback(null, { id, text });
+            }
+          });
+        }
+      });
+      if (!found) {
+        callback(new Error(`No item with id: ${id}`));
+      }
+    }
+  });
 };
 
 exports.delete = (id, callback) => {
-  var item = items[id];
-  delete items[id];
-  if (!item) {
-    // report an error if item not found
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback();
-  }
+  var fileFolder = './test/testData';
+  fs.readdir(fileFolder, function(err, files) {
+    if (err) {
+      console.log(err);
+    } else {
+      var found = false;
+      files.forEach(file => {
+        if (id === file.slice(0, 5)) {
+          found = true;
+          fs.unlink(fileFolder + '/' + file, (err) => {
+            if (err) {
+              console.log(err);
+            } else {
+              callback();
+            }
+          });
+        }
+      });
+      if (!found) {
+        callback(new Error(`No item with id: ${id}`));
+      }
+    }
+  });
 };
+
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
 
