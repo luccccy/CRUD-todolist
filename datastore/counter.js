@@ -39,23 +39,13 @@ const writeCounter = (count, callback) => {
 // Public API - Fix this function //////////////////////////////////////////////
 
 exports.getNextUniqueId = (callback) => {
-  // readCounter((err, counter) => {
-  //   if (err) {
-  //     console.log('err', err);
-  //   } else {
-  //     writeCounter(counter + 1, (err) => {
-  //       if (err) {
-  //         console.log('err', err);
-  //       } else {
-  //         callback(null, zeroPaddedNumber(counter + 1));
-  //       }
-  //     });
-  //   }
-  // });
-  // counter = counter + 1;
-  // return zeroPaddedNumber(counter);
-  readCounter((err, count) => {
-    writeCounter(count + 1, (err, result) => callback(err, result) );
+  //when we invoke the readCounter, we can get the number fileData, we pass it into callback (err, fileData) => {},then we invoke writeCounter function,
+  //we can get the couterString from writeCounter, we pass it into the callback function, that counter String is what we want to write it into the file.
+  readCounter((err, fileData) => {
+    //if there is non file exist there, we need to pass 0 into the callback.
+    //else we need to increase count by 1 into our counter and return that counter
+    writeCounter(fileData + 1, (err, counterString) => callback(err, counterString)
+    );
   });
 };
 
